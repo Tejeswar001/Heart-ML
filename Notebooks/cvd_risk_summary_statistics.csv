@@ -1,0 +1,4 @@
+CVD Risk Level,Age,BMI,Total Cholesterol (mg/dL),HDL (mg/dL),Fasting Blood Sugar (mg/dL),CVD Risk Score
+HIGH,47.58,29.28,208.02,53.44,117.06,17.61
+INTERMEDIARY,45.69,27.33,187.64,57.97,115.48,16.13
+LOW,48.35,27.38,195.45,60.57,123.49,17.01
