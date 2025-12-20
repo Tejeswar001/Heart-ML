@@ -140,7 +140,7 @@ export default function HospitalUploadPage() {
       </header>*/}
 
       {/* Content */}
-      <main className="container mx-auto px-4 pt-40 pb-24">
+      <main className="container mx-auto px-4 pt-10 pb-24">
         <div className="max-w-4xl mx-auto">
           {/* Heading */}
           <div className="text-center mb-14">
