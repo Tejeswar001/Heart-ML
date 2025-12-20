@@ -129,7 +129,7 @@ export default function HospitalUploadPage() {
   return (
     <div className="min-h-screen bg-[#F7F9FC]">
       {/* Header */}
-      <header className="fixed top-0 left-0 w-full z-50">
+      {/*<header className="fixed top-0 left-0 w-full z-50">
         <div className="mx-4 mt-4 rounded-3xl bg-[#0B3C5D]">
           <div className="container mx-auto px-6 py-5 flex items-center justify-center text-white">
             <div className="text-2xl font-extrabold tracking-wide">
@@ -137,7 +137,7 @@ export default function HospitalUploadPage() {
             </div>
           </div>
         </div>
-      </header>
+      </header>*/}
 
       {/* Content */}
       <main className="container mx-auto px-4 pt-40 pb-24">
