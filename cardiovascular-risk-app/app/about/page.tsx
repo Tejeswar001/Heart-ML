@@ -1,128 +1,155 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { HeartPulse, AlertTriangle } from "lucide-react"
-import Link from "next/link"
+"use client";
+
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
+import Link from "next/link";
 
 export default function AboutPage() {
+  const [showHeader, setShowHeader] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY && window.scrollY > 120) {
+        setShowHeader(false);
+      } else {
+        setShowHeader(true);
+      }
+      setLastScrollY(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#F7F9FC]">
       {/* Header */}
-      <header className="border-b border-border">
-        <div className="container mx-auto px-4 py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary">
-              <HeartPulse className="w-6 h-6 text-primary-foreground" />
+      <header
+        className={`fixed top-0 left-0 w-full z-50 transition-transform duration-300 ${
+          showHeader ? "translate-y-0" : "-translate-y-full"
+        }`}
+      >
+        <div className="mx-4 mt-4 rounded-3xl bg-[#0B3C5D]">
+          <div className="container mx-auto px-6 py-5 flex items-center justify-center text-white">
+            <div className="text-2xl font-extrabold tracking-wide">
+              CARDIO<span className="opacity-70">PREDICT</span>
             </div>
-            <span className="text-xl font-semibold">CardioPredict</span>
-          </Link>
+          </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-12">
+      {/* Content */}
+      <main className="container mx-auto px-4 pt-40 pb-24">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold mb-8">About CardioPredict</h1>
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-14 text-[#0B3C5D] text-center">
+            About CardioPredict
+          </h1>
 
-          <Card className="mb-6">
-            <CardContent className="pt-6 space-y-4 text-muted-foreground leading-relaxed">
-              <h2 className="text-xl font-semibold text-foreground">How the System Works</h2>
+          {/* How it works */}
+          <section className="bg-white rounded-3xl p-12 shadow-sm mb-14">
+            <h2 className="text-2xl font-semibold text-[#0B3C5D] mb-6">
+              How the System Works
+            </h2>
+
+            <div className="space-y-5 text-[#4B5563] leading-relaxed">
               <p>
-                CardioPredict uses advanced machine learning algorithms trained on extensive cardiovascular health
-                datasets to assess your risk of cardiovascular disease. The system analyzes multiple factors including:
+                CardioPredict uses machine learning models trained on
+                cardiovascular health datasets to assess disease risk using
+                clinically relevant indicators.
               </p>
-              <ul className="space-y-2 ml-6">
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>Demographic information (age, gender)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>Physical measurements (height, weight, BMI)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>Blood pressure readings</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>Cholesterol and glucose levels</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>Lifestyle factors (smoking, alcohol consumption, physical activity)</span>
-                </li>
+
+              <p>The system evaluates:</p>
+
+              <ul className="space-y-2 pl-5 list-disc marker:text-[#0B3C5D]">
+                <li>Demographic data (age, gender)</li>
+                <li>Body measurements (height, weight, BMI)</li>
+                <li>Blood pressure values</li>
+                <li>Cholesterol and glucose levels</li>
+                <li>Lifestyle factors (smoking, alcohol, activity)</li>
               </ul>
+
               <p>
-                The AI model processes this information to generate a risk score and classification (Low, Medium, or
-                High risk), along with personalized recommendations for improving your cardiovascular health.
+                Results are presented as a clear risk category with practical
+                recommendations for prevention and follow-up.
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
-          <Card className="mb-6 border-destructive/20 bg-destructive/5">
-            <CardContent className="pt-6 space-y-4">
-              <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-destructive" />
-                Important Medical Disclaimer
-              </h2>
-              <div className="text-sm text-muted-foreground space-y-3 leading-relaxed">
-                <p className="font-semibold text-foreground">
-                  This tool is for informational and educational purposes only.
-                </p>
-                <p>
-                  CardioPredict is NOT a substitute for professional medical advice, diagnosis, or treatment. The risk
-                  assessments provided by this system should not be used as the sole basis for making medical decisions.
-                </p>
-                <p>
-                  The predictions are based on statistical models and may not account for all individual health factors,
-                  medical history, family history, or other conditions that could affect your cardiovascular risk.
-                </p>
-                <p className="font-semibold text-foreground">
-                  Always seek the advice of qualified healthcare providers:
-                </p>
-                <ul className="space-y-1 ml-6">
-                  <li className="flex items-start gap-2">
-                    <span className="text-destructive mt-1">•</span>
-                    <span>Never disregard professional medical advice because of information from this tool</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-destructive mt-1">•</span>
-                    <span>Never delay seeking medical attention because of results from this assessment</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-destructive mt-1">•</span>
-                    <span>Always consult with a physician for medical advice and treatment plans</span>
-                  </li>
-                </ul>
-                <p className="font-semibold text-destructive">
-                  If you experience chest pain, shortness of breath, or other serious symptoms, seek immediate emergency
-                  medical attention by calling your local emergency services.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Disclaimer */}
+          <section className="rounded-3xl p-12 mb-14 bg-[#FFF7F7] border border-red-200">
+            <h2 className="text-2xl font-semibold text-red-700 flex items-center gap-3 mb-6">
+              <AlertTriangle className="w-6 h-6" />
+              Medical Disclaimer
+            </h2>
 
-          <Card>
-            <CardContent className="pt-6 space-y-4 text-muted-foreground leading-relaxed">
-              <h2 className="text-xl font-semibold text-foreground">Data Privacy</h2>
+            <div className="space-y-4 text-sm text-[#7A1F1F] leading-relaxed">
+              <p className="font-semibold">
+                This tool is intended for informational purposes only.
+              </p>
+
               <p>
-                We take your privacy seriously. All health data entered into this system is processed securely and is
-                not stored permanently on our servers. For hospital users uploading CSV files, data is processed in
-                memory and results are returned immediately without long-term storage.
+                CardioPredict does <strong>not</strong> replace professional
+                medical advice, diagnosis, or treatment. Risk predictions are
+                generated using statistical models and may not reflect all
+                individual health factors.
               </p>
-              <p className="text-sm">
-                This is a demonstration application. In a production environment, proper data encryption, HIPAA
-                compliance, and secure data handling procedures would be implemented.
-              </p>
-            </CardContent>
-          </Card>
 
-          <div className="text-center mt-8">
-            <Button size="lg" asChild>
+              <p className="font-semibold">
+                Always consult qualified healthcare professionals:
+              </p>
+
+              <ul className="space-y-2 pl-5 list-disc marker:text-red-600">
+                <li>Do not ignore medical advice</li>
+                <li>Do not delay care based on these results</li>
+                <li>Seek professional diagnosis and treatment plans</li>
+              </ul>
+
+              <p className="font-semibold text-red-700">
+                For urgent symptoms such as chest pain or breathing difficulty,
+                seek emergency medical care immediately.
+              </p>
+            </div>
+          </section>
+
+          {/* Privacy */}
+          <section className="bg-white rounded-3xl p-12 shadow-sm">
+            <h2 className="text-2xl font-semibold text-[#0B3C5D] mb-6">
+              Data Privacy
+            </h2>
+
+            <div className="space-y-4 text-[#4B5563] leading-relaxed">
+              <p>
+                All health data entered into CardioPredict is processed securely
+                and is not stored permanently.
+              </p>
+
+              <p>
+                Hospital CSV uploads are processed in memory and returned
+                immediately without long-term retention.
+              </p>
+
+              <p className="text-sm text-[#6B7280]">
+                This is a demonstration system. Production deployments would
+                implement encryption, compliance standards (HIPAA/GDPR), and
+                secure infrastructure.
+              </p>
+            </div>
+          </section>
+
+          {/* Back Button */}
+          <div className="text-center mt-20">
+            <Button
+              size="lg"
+              className="rounded-full px-12 bg-[#0B3C5D] text-white hover:bg-[#0B3C5D]/90"
+              asChild
+            >
               <Link href="/">Return to Home</Link>
             </Button>
           </div>
         </div>
-      </div>
+      </main>
     </div>
-  )
+  );
 }

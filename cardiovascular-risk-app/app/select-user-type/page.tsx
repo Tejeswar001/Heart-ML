@@ -1,103 +1,140 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { HeartPulse, Hospital, User } from "lucide-react"
-import Link from "next/link"
+"use client";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { HeartPulse, Hospital, User } from "lucide-react";
+import Link from "next/link";
 
 export default function SelectUserTypePage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#F7F9FC]">
       {/* Header */}
-      <header className="border-b border-border">
-        <div className="container mx-auto px-4 py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary">
-              <HeartPulse className="w-6 h-6 text-primary-foreground" />
+      <header className="fixed top-0 left-0 w-full z-50">
+        <div className="mx-4 mt-4 rounded-3xl bg-[#0B3C5D]">
+          <div className="container mx-auto px-6 py-5 flex items-center justify-center text-white">
+            <div className="text-2xl font-extrabold tracking-wide">
+              CARDIO<span className="opacity-70">PREDICT</span>
             </div>
-            <span className="text-xl font-semibold">CardioPredict</span>
-          </Link>
+          </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-20">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">Select User Type</h1>
-            <p className="text-muted-foreground text-lg leading-relaxed">
-              Choose how you would like to use CardioPredict
+      {/* Content */}
+      <main className="container mx-auto px-4 pt-40 pb-24">
+        <div className="max-w-5xl mx-auto">
+          {/* Heading */}
+          <div className="text-center mb-16">
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-[#0B3C5D]">
+              Choose How You Want to Continue
+            </h1>
+            <p className="text-lg text-[#4B5563] max-w-2xl mx-auto leading-relaxed">
+              Select the option that best describes how you will use
+              CardioPredict.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="border-2 hover:border-primary transition-colors cursor-pointer group">
-              <CardHeader>
-                <div className="w-16 h-16 rounded-lg bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center mb-4 transition-colors">
-                  <User className="w-8 h-8 text-primary" />
+          {/* Cards */}
+          <div className="grid md:grid-cols-2 gap-10">
+            {/* Individual */}
+            <Card className="rounded-3xl border border-black/5 shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-4">
+                <div className="w-16 h-16 rounded-2xl bg-[#0B3C5D]/10 flex items-center justify-center mb-6">
+                  <User className="w-8 h-8 text-[#0B3C5D]" />
                 </div>
-                <CardTitle className="text-2xl">Individual User</CardTitle>
-                <CardDescription className="text-base leading-relaxed">
-                  Get a personalized cardiovascular risk assessment for yourself
+                <CardTitle className="text-2xl text-[#0B3C5D]">
+                  Individual User
+                </CardTitle>
+                <CardDescription className="text-base text-[#4B5563] leading-relaxed">
+                  Get a personalized cardiovascular risk assessment for
+                  yourself.
                 </CardDescription>
               </CardHeader>
+
               <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground mb-6">
+                <ul className="space-y-3 text-sm text-[#4B5563] mb-8">
                   <li className="flex items-start gap-2">
-                    <span className="text-primary mt-0.5">✓</span>
-                    <span>Quick health data entry form</span>
+                    <span className="text-[#0B3C5D] mt-0.5">✓</span>
+                    <span>Quick and simple health data form</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-primary mt-0.5">✓</span>
-                    <span>Instant risk assessment results</span>
+                    <span className="text-[#0B3C5D] mt-0.5">✓</span>
+                    <span>Instant risk prediction results</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-primary mt-0.5">✓</span>
-                    <span>Personalized health recommendations</span>
+                    <span className="text-[#0B3C5D] mt-0.5">✓</span>
+                    <span>Personalized lifestyle & diet advice</span>
                   </li>
                 </ul>
-                <Button className="w-full" size="lg" asChild>
+
+                <Button
+                  size="lg"
+                  className="w-full rounded-full bg-[#0B3C5D] text-white hover:bg-[#0B3C5D]/90"
+                  asChild
+                >
                   <Link href="/predict">Continue as Individual</Link>
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="border-2 hover:border-accent transition-colors cursor-pointer group">
-              <CardHeader>
-                <div className="w-16 h-16 rounded-lg bg-accent/10 group-hover:bg-accent/20 flex items-center justify-center mb-4 transition-colors">
-                  <Hospital className="w-8 h-8 text-accent" />
+            {/* Hospital */}
+            <Card className="rounded-3xl border border-black/5 shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-4">
+                <div className="w-16 h-16 rounded-2xl bg-pink-100 flex items-center justify-center mb-6">
+                  <Hospital className="w-8 h-8 text-pink-600" />
                 </div>
-                <CardTitle className="text-2xl">Hospital / Medical Official</CardTitle>
-                <CardDescription className="text-base leading-relaxed">
-                  Upload and analyze multiple patient records at once
+                <CardTitle className="text-2xl text-[#0B3C5D]">
+                  Hospital / Medical Official
+                </CardTitle>
+                <CardDescription className="text-base text-[#4B5563] leading-relaxed">
+                  Upload and analyze cardiovascular risk data for multiple
+                  patients.
                 </CardDescription>
               </CardHeader>
+
               <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground mb-6">
+                <ul className="space-y-3 text-sm text-[#4B5563] mb-8">
                   <li className="flex items-start gap-2">
-                    <span className="text-accent mt-0.5">✓</span>
-                    <span>Bulk CSV file upload support</span>
+                    <span className="text-pink-600 mt-0.5">✓</span>
+                    <span>Bulk CSV patient data upload</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-accent mt-0.5">✓</span>
-                    <span>Batch risk analysis for multiple patients</span>
+                    <span className="text-pink-600 mt-0.5">✓</span>
+                    <span>Batch risk analysis</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-accent mt-0.5">✓</span>
-                    <span>Dashboard with patient risk overview</span>
+                    <span className="text-pink-600 mt-0.5">✓</span>
+                    <span>Patient risk overview dashboard</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg" asChild>
+
+                <Button
+                  size="lg"
+                  className="w-full rounded-full bg-pink-400 text-[#3A0F2E] hover:bg-pink-300"
+                  asChild
+                >
                   <Link href="/hospital-upload">Continue as Hospital</Link>
                 </Button>
               </CardContent>
             </Card>
           </div>
 
-          <div className="text-center mt-8">
-            <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          {/* Back link */}
+          <div className="text-center mt-12">
+            <Link
+              href="/"
+              className="text-sm text-[#4B5563] hover:text-[#0B3C5D] transition-colors"
+            >
               ← Back to Home
             </Link>
           </div>
         </div>
-      </div>
+      </main>
     </div>
-  )
+  );
 }
