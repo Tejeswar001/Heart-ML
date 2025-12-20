@@ -1,7 +1,14 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Activity, HeartPulse, Hospital, ShieldCheck, TrendingUp, Users } from "lucide-react"
-import Link from "next/link"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Activity,
+  HeartPulse,
+  Hospital,
+  ShieldCheck,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function HomePage() {
   return (
@@ -22,10 +29,16 @@ export default function HomePage() {
             >
               How It Works
             </Link>
-            <Link href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="#features"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               Features
             </Link>
-            <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/about"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               About
             </Link>
           </nav>
@@ -33,7 +46,7 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 md:py-32">
+      <section className="min-h-screen container mx-auto px-4 py-20 md:py-32">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
             <Activity className="w-4 h-4" />
@@ -43,14 +56,20 @@ export default function HomePage() {
             Predict Cardiovascular Disease Risk Early
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground mb-10 text-pretty max-w-2xl mx-auto leading-relaxed">
-            Advanced machine learning technology to assess cardiovascular health risks. Get personalized insights and
-            actionable health recommendations in minutes.
+            Advanced machine learning technology to assess cardiovascular health
+            risks. Get personalized insights and actionable health
+            recommendations in minutes.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button size="lg" className="text-base px-8" asChild>
               <Link href="/select-user-type">Check Your Risk</Link>
             </Button>
-            <Button size="lg" variant="outline" className="text-base px-8 bg-transparent" asChild>
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-base px-8 bg-transparent"
+              asChild
+            >
               <Link href="/select-user-type">Hospital Upload</Link>
             </Button>
           </div>
@@ -61,10 +80,12 @@ export default function HomePage() {
       <section id="features" className="bg-secondary/50 py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose CardioPredict</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Why Choose CardioPredict
+            </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
-              Combining cutting-edge AI with medical expertise to provide accurate, actionable cardiovascular risk
-              assessments
+              Combining cutting-edge AI with medical expertise to provide
+              accurate, actionable cardiovascular risk assessments
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
@@ -73,10 +94,12 @@ export default function HomePage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Activity className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">AI-Powered Analysis</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  AI-Powered Analysis
+                </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Advanced machine learning models trained on extensive cardiovascular datasets for accurate risk
-                  prediction
+                  Advanced machine learning models trained on extensive
+                  cardiovascular datasets for accurate risk prediction
                 </p>
               </CardContent>
             </Card>
@@ -86,9 +109,12 @@ export default function HomePage() {
                 <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
                   <TrendingUp className="w-6 h-6 text-accent" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Personalized Insights</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Personalized Insights
+                </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Receive tailored health recommendations based on your unique risk profile and lifestyle factors
+                  Receive tailored health recommendations based on your unique
+                  risk profile and lifestyle factors
                 </p>
               </CardContent>
             </Card>
@@ -98,9 +124,12 @@ export default function HomePage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <ShieldCheck className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Clinical Grade Accuracy</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Clinical Grade Accuracy
+                </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Medical-grade assessments validated against clinical standards for reliable results
+                  Medical-grade assessments validated against clinical standards
+                  for reliable results
                 </p>
               </CardContent>
             </Card>
@@ -110,9 +139,12 @@ export default function HomePage() {
                 <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
                   <Hospital className="w-6 h-6 text-accent" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Hospital Integration</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Hospital Integration
+                </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Bulk patient data upload and analysis for healthcare providers and medical institutions
+                  Bulk patient data upload and analysis for healthcare providers
+                  and medical institutions
                 </p>
               </CardContent>
             </Card>
@@ -124,7 +156,8 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">For Everyone</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Simple interface designed for both individuals and healthcare professionals
+                  Simple interface designed for both individuals and healthcare
+                  professionals
                 </p>
               </CardContent>
             </Card>
@@ -134,9 +167,12 @@ export default function HomePage() {
                 <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
                   <HeartPulse className="w-6 h-6 text-accent" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Actionable Results</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Actionable Results
+                </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Clear risk levels with specific diet, lifestyle, and medical recommendations
+                  Clear risk levels with specific diet, lifestyle, and medical
+                  recommendations
                 </p>
               </CardContent>
             </Card>
@@ -159,7 +195,8 @@ export default function HomePage() {
             </div>
             <h3 className="text-xl font-semibold mb-2">Enter Your Data</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Provide basic health information including age, blood pressure, cholesterol, and lifestyle factors
+              Provide basic health information including age, blood pressure,
+              cholesterol, and lifestyle factors
             </p>
           </div>
           <div className="text-center">
@@ -168,7 +205,8 @@ export default function HomePage() {
             </div>
             <h3 className="text-xl font-semibold mb-2">AI Analysis</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Our machine learning model processes your data to calculate your cardiovascular risk score
+              Our machine learning model processes your data to calculate your
+              cardiovascular risk score
             </p>
           </div>
           <div className="text-center">
@@ -177,7 +215,8 @@ export default function HomePage() {
             </div>
             <h3 className="text-xl font-semibold mb-2">Get Results</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Receive your risk assessment with personalized health recommendations and action steps
+              Receive your risk assessment with personalized health
+              recommendations and action steps
             </p>
           </div>
         </div>
@@ -186,11 +225,19 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="bg-primary text-primary-foreground py-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">Take Control of Your Heart Health Today</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
+            Take Control of Your Heart Health Today
+          </h2>
           <p className="text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Early detection and prevention are key to cardiovascular health. Start your risk assessment now.
+            Early detection and prevention are key to cardiovascular health.
+            Start your risk assessment now.
           </p>
-          <Button size="lg" variant="secondary" className="text-base px-8" asChild>
+          <Button
+            size="lg"
+            variant="secondary"
+            className="text-base px-8"
+            asChild
+          >
             <Link href="/select-user-type">Get Started Now</Link>
           </Button>
         </div>
@@ -207,10 +254,16 @@ export default function HomePage() {
               <span className="font-semibold">CardioPredict</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <Link href="/about" className="hover:text-foreground transition-colors">
+              <Link
+                href="/about"
+                className="hover:text-foreground transition-colors"
+              >
                 About
               </Link>
-              <Link href="/about" className="hover:text-foreground transition-colors">
+              <Link
+                href="/about"
+                className="hover:text-foreground transition-colors"
+              >
                 Disclaimer
               </Link>
               <span>© 2025 CardioPredict</span>
@@ -219,5 +272,5 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
