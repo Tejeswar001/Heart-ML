@@ -4,101 +4,135 @@ import numpy as np
 import pandas as pd
 from typing import Dict, List, Any
 import io
+import joblib
+import os
 
 app = Flask(__name__)
 CORS(app)
 
-# Mock ML model prediction function
-# In production, replace with actual trained model
+# Load the trained model
+MODEL_PATH = 'models/binary_logistic_regression_model.pkl'
+try:
+    model = joblib.load(MODEL_PATH)
+    print("Model loaded successfully")
+except Exception as e:
+    print(f"Error loading model: {e}")
+    model = None
+
+# Scaling parameters from training data
+SCALING_PARAMS = {
+    "Age": {"mean": 46.7808823529, "std": 11.9071927156},
+    "Weight (kg)": {"mean": 85.9008636029, "std": 20.5439151171},
+    "Height (m)": {"mean": 1.7525948529, "std": 0.1100074376},
+    "BMI": {"mean": 28.2866911765, "std": 7.6925854763},
+    "Abdominal Circumference (cm)": {"mean": 91.6889981787, "std": 12.7568242241},
+    "Total Cholesterol (mg/dL)": {"mean": 204.1272058824, "std": 53.5577713662},
+    "HDL (mg/dL)": {"mean": 55.3169117647, "std": 15.4404648614},
+    "Fasting Blood Sugar (mg/dL)": {"mean": 117.1279411765, "std": 29.5767511346},
+    "Height (cm)": {"mean": 175.2482838235, "std": 10.9055172937},
+    "Waist-to-Height Ratio": {"mean": 0.5252965507, "std": 0.0806377141},
+    "Systolic BP": {"mean": 126.5625, "std": 21.6647933899},
+    "Diastolic BP": {"mean": 81.9066176471, "std": 13.9352845799},
+    "Estimated LDL (mg/dL)": {"mean": 117.7169117647, "std": 53.0223689105},
+    "BMI_calculated": {"mean": 28.2860684897, "std": 7.6928293109}
+}
+
+def calculate_bp_category(systolic, diastolic):
+    if systolic < 120 and diastolic < 80:
+        return 0  # Normal
+    elif 120 <= systolic <= 129 and diastolic < 80:
+        return 1  # Elevated
+    elif (130 <= systolic <= 139) or (80 <= diastolic <= 89):
+        return 2  # Hypertension Stage 1
+    else:
+        return 3  # Hypertension Stage 2
+
 def predict_cardiovascular_risk(features: Dict[str, Any]) -> Dict[str, Any]:
     """
     Predict cardiovascular disease risk based on patient features
-    
-    Features:
-    - age: int
-    - gender: str ('male' or 'female')
-    - height: float (cm)
-    - weight: float (kg)
-    - systolic: int (mmHg)
-    - diastolic: int (mmHg)
-    - cholesterol: str ('normal', 'above_normal', 'well_above_normal')
-    - glucose: str ('normal', 'above_normal', 'well_above_normal')
-    - smoking: str ('yes' or 'no')
-    - alcohol: str ('yes' or 'no')
-    - physical_activity: str ('yes' or 'no')
     """
-    
-    # Simple risk scoring algorithm (replace with actual ML model)
-    risk_score = 0
-    
-    # Age factor
-    age = int(features.get('age', 0))
-    if age > 60:
-        risk_score += 30
-    elif age > 50:
-        risk_score += 20
-    elif age > 40:
-        risk_score += 10
-    
-    # BMI factor
-    height_m = float(features.get('height', 170)) / 100
-    weight = float(features.get('weight', 70))
-    bmi = weight / (height_m ** 2)
-    if bmi > 30:
-        risk_score += 20
-    elif bmi > 25:
-        risk_score += 10
-    
-    # Blood pressure factor
-    systolic = int(features.get('systolic', 120))
-    diastolic = int(features.get('diastolic', 80))
-    if systolic > 140 or diastolic > 90:
-        risk_score += 25
-    elif systolic > 130 or diastolic > 85:
-        risk_score += 15
-    
-    # Cholesterol factor
-    cholesterol = features.get('cholesterol', 'normal')
-    if cholesterol == 'well_above_normal':
-        risk_score += 20
-    elif cholesterol == 'above_normal':
-        risk_score += 10
-    
-    # Glucose factor
-    glucose = features.get('glucose', 'normal')
-    if glucose == 'well_above_normal':
-        risk_score += 20
-    elif glucose == 'above_normal':
-        risk_score += 10
-    
-    # Lifestyle factors
-    if features.get('smoking') == 'yes':
-        risk_score += 25
-    if features.get('alcohol') == 'yes':
-        risk_score += 10
-    if features.get('physical_activity') == 'no':
-        risk_score += 15
-    
-    # Gender factor (males generally have higher risk)
-    if features.get('gender') == 'male':
-        risk_score += 5
-    
-    # Convert to probability (0-1 scale)
-    probability = min(risk_score / 100, 0.95)
-    
-    # Determine risk level
-    if probability >= 0.6:
-        risk_level = 'high'
-    elif probability >= 0.3:
-        risk_level = 'medium'
-    else:
-        risk_level = 'low'
-    
-    return {
-        'risk_level': risk_level,
-        'probability': round(probability, 2),
-        'risk_score': risk_score
-    }
+    if model is None:
+        return {"error": "Model not loaded"}
+
+    try:
+        # Extract and convert inputs
+        age = float(features.get('age', 0))
+        sex = 1 if features.get('sex', '').lower() == 'male' else 0
+        weight = float(features.get('weight', 0))
+        height_cm = float(features.get('height', 0))
+        abdominal_circumference = float(features.get('abdominal_circumference', 0))
+        total_cholesterol = float(features.get('total_cholesterol', 0))
+        hdl = float(features.get('hdl', 0))
+        fasting_blood_sugar = float(features.get('fasting_blood_sugar', 0))
+        smoking = 1 if features.get('smoking', '').lower() == 'yes' else 0
+        diabetes = 1 if features.get('diabetes', '').lower() == 'yes' else 0
+        
+        activity_map = {'low': 0, 'moderate': 1, 'high': 2}
+        physical_activity = activity_map.get(features.get('physical_activity', '').lower(), 0)
+        
+        family_history = 1 if features.get('family_history', '').lower() == 'yes' else 0
+        systolic = float(features.get('systolic', 0))
+        diastolic = float(features.get('diastolic', 0))
+
+        # Calculate derived features
+        height_m = height_cm / 100
+        bmi = weight / (height_m ** 2) if height_m > 0 else 0
+        waist_to_height = abdominal_circumference / height_cm if height_cm > 0 else 0
+        bp_category = calculate_bp_category(systolic, diastolic)
+        estimated_ldl = total_cholesterol - hdl # Approximation as Non-HDL
+
+        # Helper function to scale values
+        def scale(value, param_name):
+            params = SCALING_PARAMS.get(param_name)
+            if params:
+                return (value - params['mean']) / params['std']
+            return value
+
+        # Create DataFrame with exact columns expected by the model
+        # Note: Numerical columns must be scaled because the model was trained on scaled data
+        input_data = pd.DataFrame([{
+            'Sex': sex,
+            'Age': scale(age, 'Age'),
+            'Weight (kg)': scale(weight, 'Weight (kg)'),
+            'Height (m)': scale(height_m, 'Height (m)'),
+            'BMI': scale(bmi, 'BMI'),
+            'Abdominal Circumference (cm)': scale(abdominal_circumference, 'Abdominal Circumference (cm)'),
+            'Total Cholesterol (mg/dL)': scale(total_cholesterol, 'Total Cholesterol (mg/dL)'),
+            'HDL (mg/dL)': scale(hdl, 'HDL (mg/dL)'),
+            'Fasting Blood Sugar (mg/dL)': scale(fasting_blood_sugar, 'Fasting Blood Sugar (mg/dL)'),
+            'Smoking Status': smoking,
+            'Diabetes Status': diabetes,
+            'Physical Activity Level': physical_activity,
+            'Family History of CVD': family_history,
+            'Height (cm)': scale(height_cm, 'Height (cm)'),
+            'Waist-to-Height Ratio': scale(waist_to_height, 'Waist-to-Height Ratio'),
+            'Systolic BP': scale(systolic, 'Systolic BP'),
+            'Diastolic BP': scale(diastolic, 'Diastolic BP'),
+            'Blood Pressure Category': bp_category,
+            'Estimated LDL (mg/dL)': scale(estimated_ldl, 'Estimated LDL (mg/dL)'),
+            'BMI_calculated': scale(bmi, 'BMI_calculated')
+        }])
+
+        # Predict probability
+        probability = model.predict_proba(input_data)[0][1]
+        risk_score = round(probability * 100, 2)
+        
+        if probability >= 0.6:
+            risk_level = "high"
+        elif probability >= 0.3:
+            risk_level = "medium"
+        else:
+            risk_level = "low"
+
+        return {
+            "riskScore": risk_score,
+            "riskLevel": risk_level,
+            "probability": probability
+        }
+
+    except Exception as e:
+        print(f"Prediction error: {e}")
+        return {"error": str(e)}
 
 
 def generate_recommendations(features: Dict[str, Any], prediction: Dict[str, Any]) -> Dict[str, List[str]]:
@@ -111,11 +145,13 @@ def generate_recommendations(features: Dict[str, Any], prediction: Dict[str, Any
     }
     
     # Diet recommendations
-    if features.get('cholesterol') in ['above_normal', 'well_above_normal']:
+    total_cholesterol = float(features.get('total_cholesterol', 0))
+    if total_cholesterol > 200:
         recommendations['diet'].append('Limit saturated fats and cholesterol-rich foods')
         recommendations['diet'].append('Increase fiber intake with whole grains and vegetables')
     
-    if features.get('glucose') in ['above_normal', 'well_above_normal']:
+    fasting_blood_sugar = float(features.get('fasting_blood_sugar', 0))
+    if fasting_blood_sugar > 100:
         recommendations['diet'].append('Reduce sugar and refined carbohydrate intake')
         recommendations['diet'].append('Choose low glycemic index foods')
     
@@ -123,28 +159,22 @@ def generate_recommendations(features: Dict[str, Any], prediction: Dict[str, Any
     recommendations['diet'].append('Reduce sodium intake to control blood pressure')
     
     # Lifestyle recommendations
-    if features.get('smoking') == 'yes':
+    if features.get('smoking', '').lower() == 'yes':
         recommendations['lifestyle'].append('Quit smoking - this is the most important change you can make')
         recommendations['lifestyle'].append('Seek support through smoking cessation programs')
     
-    if features.get('physical_activity') == 'no':
+    if features.get('physical_activity', '').lower() == 'low':
         recommendations['lifestyle'].append('Start with 30 minutes of moderate exercise 5 days a week')
         recommendations['lifestyle'].append('Include both cardio and strength training activities')
-    
-    if features.get('alcohol') == 'yes':
-        recommendations['lifestyle'].append('Limit alcohol consumption to moderate levels')
     
     recommendations['lifestyle'].append('Manage stress through relaxation techniques')
     recommendations['lifestyle'].append('Ensure adequate sleep (7-9 hours per night)')
     
     # Medical recommendations
-    risk_level = prediction.get('risk_level')
+    risk_level = prediction.get('riskLevel')
     if risk_level == 'high':
         recommendations['medical'].append('Schedule an appointment with a cardiologist soon')
         recommendations['medical'].append('Discuss medication options with your healthcare provider')
-    elif risk_level == 'medium':
-        recommendations['medical'].append('Consult with your primary care physician')
-        recommendations['medical'].append('Consider more frequent health check-ups')
     
     recommendations['medical'].append('Get regular cardiovascular health screenings')
     recommendations['medical'].append('Keep track of your blood pressure and cholesterol levels')
@@ -155,8 +185,9 @@ def generate_recommendations(features: Dict[str, Any], prediction: Dict[str, Any
 def validate_patient_data(data: Dict[str, Any]) -> tuple[bool, str]:
     """Validate patient data"""
     
-    required_fields = ['age', 'gender', 'height', 'weight', 'systolic', 'diastolic', 
-                      'cholesterol', 'glucose', 'smoking', 'alcohol', 'physical_activity']
+    required_fields = ['age', 'sex', 'height', 'weight', 'systolic', 'diastolic', 
+                      'total_cholesterol', 'hdl', 'fasting_blood_sugar', 'smoking', 
+                      'diabetes', 'physical_activity', 'family_history', 'abdominal_circumference']
     
     for field in required_fields:
         if field not in data:
@@ -183,30 +214,44 @@ def validate_patient_data(data: Dict[str, Any]) -> tuple[bool, str]:
         diastolic = int(data['diastolic'])
         if not 40 <= diastolic <= 150:
             return False, "Diastolic BP must be between 40 and 150 mmHg"
+            
+        total_cholesterol = float(data['total_cholesterol'])
+        if not 50 <= total_cholesterol <= 500:
+            return False, "Total Cholesterol must be between 50 and 500 mg/dL"
+
+        hdl = float(data['hdl'])
+        if not 10 <= hdl <= 150:
+            return False, "HDL must be between 10 and 150 mg/dL"
+            
+        fbs = float(data['fasting_blood_sugar'])
+        if not 50 <= fbs <= 500:
+            return False, "Fasting Blood Sugar must be between 50 and 500 mg/dL"
+            
+        abdominal_circumference = float(data['abdominal_circumference'])
+        if not 40 <= abdominal_circumference <= 200:
+            return False, "Abdominal Circumference must be between 40 and 200 cm"
         
     except (ValueError, TypeError):
         return False, "Invalid numeric value"
     
     # Validate categorical fields
-    if data['gender'] not in ['male', 'female']:
-        return False, "Gender must be 'male' or 'female'"
+    if data['sex'].lower() not in ['male', 'female']:
+        return False, "Sex must be 'male' or 'female'"
     
-    if data['cholesterol'] not in ['normal', 'above_normal', 'well_above_normal']:
-        return False, "Invalid cholesterol level"
-    
-    if data['glucose'] not in ['normal', 'above_normal', 'well_above_normal']:
-        return False, "Invalid glucose level"
-    
-    if data['smoking'] not in ['yes', 'no']:
+    if data['smoking'].lower() not in ['yes', 'no']:
         return False, "Smoking must be 'yes' or 'no'"
     
-    if data['alcohol'] not in ['yes', 'no']:
-        return False, "Alcohol must be 'yes' or 'no'"
+    if data['diabetes'].lower() not in ['yes', 'no']:
+        return False, "Diabetes must be 'yes' or 'no'"
+        
+    if data['family_history'].lower() not in ['yes', 'no']:
+        return False, "Family History must be 'yes' or 'no'"
     
-    if data['physical_activity'] not in ['yes', 'no']:
-        return False, "Physical activity must be 'yes' or 'no'"
+    if data['physical_activity'].lower() not in ['low', 'moderate', 'high']:
+        return False, "Physical activity must be 'low', 'moderate', or 'high'"
     
     return True, ""
+
 
 
 @app.route('/')
@@ -265,9 +310,11 @@ def predict():
         recommendations = generate_recommendations(data, prediction)
         
         return jsonify({
-            'success': True,
-            'prediction': prediction,
-            'recommendations': recommendations
+            'riskLevel': prediction.get('riskLevel'),
+            'probability': prediction.get('probability'),
+            'riskScore': prediction.get('riskScore'),
+            'recommendations': recommendations,
+            'formData': data
         })
         
     except Exception as e:
@@ -280,7 +327,7 @@ def predict_csv():
     Predict cardiovascular risk for multiple patients from CSV
     
     Expects a CSV file with columns:
-    age,gender,height,weight,systolic,diastolic,cholesterol,glucose,smoking,alcohol,physical_activity
+    age,sex,height,weight,systolic,diastolic,total_cholesterol,hdl,fasting_blood_sugar,smoking,diabetes,family_history,physical_activity,abdominal_circumference
     """
     try:
         if 'file' not in request.files:
@@ -299,8 +346,12 @@ def predict_csv():
         df = pd.read_csv(io.StringIO(csv_data))
         
         # Validate columns
-        required_columns = ['age', 'gender', 'height', 'weight', 'systolic', 'diastolic',
-                          'cholesterol', 'glucose', 'smoking', 'alcohol', 'physical_activity']
+        required_columns = ['age', 'sex', 'height', 'weight', 'systolic', 'diastolic', 
+                          'total_cholesterol', 'hdl', 'fasting_blood_sugar', 'smoking', 
+                          'diabetes', 'family_history', 'physical_activity', 'abdominal_circumference']
+        
+        # Normalize column names to lowercase and strip whitespace
+        df.columns = df.columns.str.lower().str.strip()
         
         missing_columns = set(required_columns) - set(df.columns)
         if missing_columns:
@@ -324,12 +375,20 @@ def predict_csv():
             # Make prediction
             prediction = predict_cardiovascular_risk(patient_data)
             
+            if "error" in prediction:
+                 errors.append({
+                    'row': idx + 1,
+                    'error': prediction["error"]
+                })
+                 continue
+
             results.append({
                 'patient_id': f'P{str(idx + 1).zfill(3)}',
                 'age': int(patient_data['age']),
-                'gender': patient_data['gender'],
-                'risk_level': prediction['risk_level'],
-                'probability': prediction['probability']
+                'sex': patient_data['sex'],
+                'risk_level': prediction['riskLevel'],
+                'probability': prediction['probability'],
+                'risk_score': prediction['riskScore']
             })
         
         return jsonify({

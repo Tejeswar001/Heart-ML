@@ -29,16 +29,19 @@ export default function PredictPage() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     age: "",
-    gender: "",
+    sex: "",
     height: "",
     weight: "",
     systolic: "",
     diastolic: "",
-    cholesterol: "",
-    glucose: "",
+    total_cholesterol: "",
+    hdl: "",
+    fasting_blood_sugar: "",
     smoking: "",
-    alcohol: "",
+    diabetes: "",
     physical_activity: "",
+    family_history: "",
+    abdominal_circumference: "",
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -59,40 +62,38 @@ export default function PredictPage() {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const response = await fetch("http://localhost:5000/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    // Store data in localStorage for results page
-    localStorage.setItem("predictionData", JSON.stringify(formData));
+      if (!response.ok) {
+        throw new Error("Prediction failed");
+      }
 
-    // Mock prediction result
-    const mockResult = {
-      riskLevel: "medium",
-      probability: 0.45,
-      formData,
-    };
+      const result = await response.json();
 
-    localStorage.setItem("predictionResult", JSON.stringify(mockResult));
+      // Store data in localStorage for results page
+      localStorage.setItem("predictionData", JSON.stringify(formData));
+      localStorage.setItem("predictionResult", JSON.stringify(result));
 
-    router.push("/results");
+      router.push("/results");
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle error (maybe show a toast)
+    } finally {
+      setLoading(false);
+    }
   };
 
   const bmi = calculateBMI();
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      {/*<header className="border-b border-border">
-        <div className="container mx-auto px-4 py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary">
-              <HeartPulse className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-semibold">CardioPredict</span>
-          </Link>
-        </div>
-      </header>*/}
-
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-8">
@@ -130,16 +131,14 @@ export default function PredictPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="gender">Gender *</Label>
+                    <Label htmlFor="sex">Sex *</Label>
                     <Select
-                      value={formData.gender}
-                      onValueChange={(value) =>
-                        handleInputChange("gender", value)
-                      }
+                      value={formData.sex}
+                      onValueChange={(value) => handleInputChange("sex", value)}
                       required
                     >
-                      <SelectTrigger id="gender">
-                        <SelectValue placeholder="Select gender" />
+                      <SelectTrigger id="sex">
+                        <SelectValue placeholder="Select sex" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="male">Male</SelectItem>
@@ -177,6 +176,27 @@ export default function PredictPage() {
                       required
                       min="20"
                       max="300"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="abdominal_circumference">
+                      Abdominal Circumference (cm) *
+                    </Label>
+                    <Input
+                      id="abdominal_circumference"
+                      type="number"
+                      placeholder="e.g., 90"
+                      value={formData.abdominal_circumference}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "abdominal_circumference",
+                          e.target.value
+                        )
+                      }
+                      required
+                      min="40"
+                      max="200"
                     />
                   </div>
                 </div>
@@ -217,9 +237,6 @@ export default function PredictPage() {
                       min="70"
                       max="250"
                     />
-                    <p className="text-xs text-muted-foreground">
-                      Upper number in blood pressure reading
-                    </p>
                   </div>
 
                   <div className="space-y-2">
@@ -236,57 +253,56 @@ export default function PredictPage() {
                       min="40"
                       max="150"
                     />
-                    <p className="text-xs text-muted-foreground">
-                      Lower number in blood pressure reading
-                    </p>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="cholesterol">Cholesterol Level *</Label>
-                    <Select
-                      value={formData.cholesterol}
-                      onValueChange={(value) =>
-                        handleInputChange("cholesterol", value)
+                    <Label htmlFor="total_cholesterol">
+                      Total Cholesterol (mg/dL) *
+                    </Label>
+                    <Input
+                      id="total_cholesterol"
+                      type="number"
+                      placeholder="e.g., 200"
+                      value={formData.total_cholesterol}
+                      onChange={(e) =>
+                        handleInputChange("total_cholesterol", e.target.value)
                       }
                       required
-                    >
-                      <SelectTrigger id="cholesterol">
-                        <SelectValue placeholder="Select level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="above_normal">
-                          Above Normal
-                        </SelectItem>
-                        <SelectItem value="well_above_normal">
-                          Well Above Normal
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                      min="50"
+                      max="500"
+                    />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="glucose">Glucose Level *</Label>
-                    <Select
-                      value={formData.glucose}
-                      onValueChange={(value) =>
-                        handleInputChange("glucose", value)
+                    <Label htmlFor="hdl">HDL Cholesterol (mg/dL) *</Label>
+                    <Input
+                      id="hdl"
+                      type="number"
+                      placeholder="e.g., 50"
+                      value={formData.hdl}
+                      onChange={(e) => handleInputChange("hdl", e.target.value)}
+                      required
+                      min="10"
+                      max="150"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="fasting_blood_sugar">
+                      Fasting Blood Sugar (mg/dL) *
+                    </Label>
+                    <Input
+                      id="fasting_blood_sugar"
+                      type="number"
+                      placeholder="e.g., 100"
+                      value={formData.fasting_blood_sugar}
+                      onChange={(e) =>
+                        handleInputChange("fasting_blood_sugar", e.target.value)
                       }
                       required
-                    >
-                      <SelectTrigger id="glucose">
-                        <SelectValue placeholder="Select level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="above_normal">
-                          Above Normal
-                        </SelectItem>
-                        <SelectItem value="well_above_normal">
-                          Well Above Normal
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                      min="50"
+                      max="500"
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -294,15 +310,15 @@ export default function PredictPage() {
 
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle>Lifestyle Factors</CardTitle>
+                <CardTitle>Lifestyle & History</CardTitle>
                 <CardDescription>
-                  Information about your daily habits
+                  Information about your daily habits and medical history
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="smoking">Smoking *</Label>
+                    <Label htmlFor="smoking">Smoking Status *</Label>
                     <Select
                       value={formData.smoking}
                       onValueChange={(value) =>
@@ -321,15 +337,36 @@ export default function PredictPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="alcohol">Alcohol Intake *</Label>
+                    <Label htmlFor="diabetes">Diabetes Status *</Label>
                     <Select
-                      value={formData.alcohol}
+                      value={formData.diabetes}
                       onValueChange={(value) =>
-                        handleInputChange("alcohol", value)
+                        handleInputChange("diabetes", value)
                       }
                       required
                     >
-                      <SelectTrigger id="alcohol">
+                      <SelectTrigger id="diabetes">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="no">No</SelectItem>
+                        <SelectItem value="yes">Yes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="family_history">
+                      Family History of CVD *
+                    </Label>
+                    <Select
+                      value={formData.family_history}
+                      onValueChange={(value) =>
+                        handleInputChange("family_history", value)
+                      }
+                      required
+                    >
+                      <SelectTrigger id="family_history">
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent>
@@ -341,7 +378,7 @@ export default function PredictPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="physical_activity">
-                      Physical Activity *
+                      Physical Activity Level *
                     </Label>
                     <Select
                       value={formData.physical_activity}
@@ -354,8 +391,9 @@ export default function PredictPage() {
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="no">Inactive</SelectItem>
-                        <SelectItem value="yes">Active</SelectItem>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="moderate">Moderate</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import {
   HeartPulse,
   AlertCircle,
@@ -15,36 +15,36 @@ import {
   Activity,
   Stethoscope,
   ArrowLeft,
-} from "lucide-react"
-import Link from "next/link"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface PredictionResult {
-  riskLevel: "low" | "medium" | "high"
-  probability: number
-  formData: any
+  riskLevel: "low" | "medium" | "high";
+  probability: number;
+  formData: any;
 }
 
 interface Recommendation {
-  category: string
-  icon: React.ReactNode
-  title: string
-  items: string[]
+  category: string;
+  icon: React.ReactNode;
+  title: string;
+  items: string[];
 }
 
 export default function ResultsPage() {
-  const router = useRouter()
-  const [result, setResult] = useState<PredictionResult | null>(null)
+  const router = useRouter();
+  const [result, setResult] = useState<PredictionResult | null>(null);
 
   useEffect(() => {
-    const storedResult = localStorage.getItem("predictionResult")
+    const storedResult = localStorage.getItem("predictionResult");
     if (storedResult) {
-      setResult(JSON.parse(storedResult))
+      setResult(JSON.parse(storedResult));
     } else {
-      router.push("/predict")
+      router.push("/predict");
     }
-  }, [router])
+  }, [router]);
 
   if (!result) {
     return (
@@ -54,7 +54,7 @@ export default function ResultsPage() {
           <p className="text-muted-foreground">Loading results...</p>
         </div>
       </div>
-    )
+    );
   }
 
   const getRiskConfig = () => {
@@ -66,8 +66,9 @@ export default function ResultsPage() {
           borderColor: "border-accent",
           label: "Low Risk",
           icon: <CheckCircle2 className="w-8 h-8" />,
-          message: "Your cardiovascular risk is low. Keep up the good work with your healthy lifestyle!",
-        }
+          message:
+            "Your cardiovascular risk is low. Keep up the good work with your healthy lifestyle!",
+        };
       case "medium":
         return {
           color: "text-chart-4",
@@ -77,7 +78,7 @@ export default function ResultsPage() {
           icon: <AlertTriangle className="w-8 h-8" />,
           message:
             "Your cardiovascular risk is moderate. Consider making some lifestyle changes to improve your health.",
-        }
+        };
       case "high":
         return {
           color: "text-destructive",
@@ -87,33 +88,47 @@ export default function ResultsPage() {
           icon: <AlertCircle className="w-8 h-8" />,
           message:
             "Your cardiovascular risk is elevated. We strongly recommend consulting with a healthcare provider soon.",
-        }
+        };
+      default:
+        return {
+          color: "text-muted-foreground",
+          bgColor: "bg-muted",
+          borderColor: "border-muted",
+          label: "Unknown Risk",
+          icon: <AlertCircle className="w-8 h-8" />,
+          message: "Unable to determine risk level.",
+        };
     }
-  }
+  };
 
-  const riskConfig = getRiskConfig()
-  const probabilityPercent = Math.round(result.probability * 100)
+  const riskConfig = getRiskConfig();
+  const probabilityPercent = Math.round(result.probability * 100);
 
   const getRecommendations = (): Recommendation[] => {
-    const baseRecommendations: Recommendation[] = []
+    const baseRecommendations: Recommendation[] = [];
 
     // Diet recommendations
-    const dietItems: string[] = []
-    if (result.formData.cholesterol === "above_normal" || result.formData.cholesterol === "well_above_normal") {
-      dietItems.push("Limit saturated fats and cholesterol-rich foods")
-      dietItems.push("Increase fiber intake with whole grains and vegetables")
+    const dietItems: string[] = [];
+    const totalCholesterol = Number(result.formData.total_cholesterol);
+    const fastingBloodSugar = Number(result.formData.fasting_blood_sugar);
+
+    if (totalCholesterol > 200) {
+      dietItems.push("Limit saturated fats and cholesterol-rich foods");
+      dietItems.push("Increase fiber intake with whole grains and vegetables");
     }
-    if (result.formData.glucose === "above_normal" || result.formData.glucose === "well_above_normal") {
-      dietItems.push("Reduce sugar and refined carbohydrate intake")
-      dietItems.push("Choose low glycemic index foods")
+    if (fastingBloodSugar > 100) {
+      dietItems.push("Reduce sugar and refined carbohydrate intake");
+      dietItems.push("Choose low glycemic index foods");
     }
-    dietItems.push("Eat more fruits, vegetables, and lean proteins")
-    dietItems.push("Reduce sodium intake to control blood pressure")
+    dietItems.push("Eat more fruits, vegetables, and lean proteins");
+    dietItems.push("Reduce sodium intake to control blood pressure");
+
     if (result.formData.weight && result.formData.height) {
       const bmi =
-        Number.parseFloat(result.formData.weight) / Math.pow(Number.parseFloat(result.formData.height) / 100, 2)
+        Number.parseFloat(result.formData.weight) /
+        Math.pow(Number.parseFloat(result.formData.height) / 100, 2);
       if (bmi > 25) {
-        dietItems.push("Consider portion control to achieve healthy weight")
+        dietItems.push("Consider portion control to achieve healthy weight");
       }
     }
 
@@ -122,59 +137,74 @@ export default function ResultsPage() {
       icon: <Apple className="w-5 h-5" />,
       title: "Diet Recommendations",
       items: dietItems,
-    })
+    });
 
     // Lifestyle recommendations
-    const lifestyleItems: string[] = []
+    const lifestyleItems: string[] = [];
     if (result.formData.smoking === "yes") {
-      lifestyleItems.push("Quit smoking - this is the most important change you can make")
-      lifestyleItems.push("Seek support through smoking cessation programs")
+      lifestyleItems.push(
+        "Quit smoking - this is the most important change you can make"
+      );
+      lifestyleItems.push("Seek support through smoking cessation programs");
     }
-    if (result.formData.physical_activity === "no") {
-      lifestyleItems.push("Start with 30 minutes of moderate exercise 5 days a week")
-      lifestyleItems.push("Include both cardio and strength training activities")
+    if (result.formData.physical_activity === "low") {
+      lifestyleItems.push(
+        "Start with 30 minutes of moderate exercise 5 days a week"
+      );
+      lifestyleItems.push(
+        "Include both cardio and strength training activities"
+      );
     }
-    if (result.formData.alcohol === "yes") {
-      lifestyleItems.push("Limit alcohol consumption to moderate levels")
-    }
-    lifestyleItems.push("Manage stress through relaxation techniques or meditation")
-    lifestyleItems.push("Ensure adequate sleep (7-9 hours per night)")
-    lifestyleItems.push("Monitor your blood pressure regularly at home")
+
+    lifestyleItems.push(
+      "Manage stress through relaxation techniques or meditation"
+    );
+    lifestyleItems.push("Ensure adequate sleep (7-9 hours per night)");
+    lifestyleItems.push("Monitor your blood pressure regularly at home");
 
     baseRecommendations.push({
       category: "lifestyle",
       icon: <Activity className="w-5 h-5" />,
       title: "Lifestyle Changes",
       items: lifestyleItems,
-    })
+    });
 
     // Medical recommendations
-    const medicalItems: string[] = []
+    const medicalItems: string[] = [];
     if (result.riskLevel === "high") {
-      medicalItems.push("Schedule an appointment with a cardiologist soon")
-      medicalItems.push("Discuss medication options with your healthcare provider")
+      medicalItems.push("Schedule an appointment with a cardiologist soon");
+      medicalItems.push(
+        "Discuss medication options with your healthcare provider"
+      );
     } else if (result.riskLevel === "medium") {
-      medicalItems.push("Consult with your primary care physician")
-      medicalItems.push("Consider more frequent health check-ups")
+      medicalItems.push("Consult with your primary care physician");
+      medicalItems.push("Consider more frequent health check-ups");
     }
-    medicalItems.push("Get regular cardiovascular health screenings")
-    medicalItems.push("Keep track of your blood pressure and cholesterol levels")
-    if (result.formData.systolic > 130 || result.formData.diastolic > 80) {
-      medicalItems.push("Discuss blood pressure management with your doctor")
+    medicalItems.push("Get regular cardiovascular health screenings");
+    medicalItems.push(
+      "Keep track of your blood pressure and cholesterol levels"
+    );
+    if (
+      Number(result.formData.systolic) > 130 ||
+      Number(result.formData.diastolic) > 80
+    ) {
+      medicalItems.push("Discuss blood pressure management with your doctor");
     }
-    medicalItems.push("Consider cardiac stress tests if recommended by your doctor")
+    medicalItems.push(
+      "Consider cardiac stress tests if recommended by your doctor"
+    );
 
     baseRecommendations.push({
       category: "medical",
       icon: <Stethoscope className="w-5 h-5" />,
       title: "Medical Advice",
       items: medicalItems,
-    })
+    });
 
-    return baseRecommendations
-  }
+    return baseRecommendations;
+  };
 
-  const recommendations = getRecommendations()
+  const recommendations = getRecommendations();
 
   return (
     <div className="min-h-screen bg-background">
@@ -203,15 +233,21 @@ export default function ResultsPage() {
           </div>
 
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">Your Risk Assessment Results</h1>
-            <p className="text-muted-foreground">Based on the information you provided</p>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+              Your Risk Assessment Results
+            </h1>
+            <p className="text-muted-foreground">
+              Based on the information you provided
+            </p>
           </div>
 
           {/* Risk Level Card */}
           <Card className={`border-2 ${riskConfig.borderColor} mb-8`}>
             <CardContent className="pt-8 pb-8">
               <div className="text-center space-y-6">
-                <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full ${riskConfig.bgColor}`}>
+                <div
+                  className={`inline-flex items-center justify-center w-20 h-20 rounded-full ${riskConfig.bgColor}`}
+                >
                   <div className={riskConfig.color}>{riskConfig.icon}</div>
                 </div>
                 <div>
@@ -227,8 +263,12 @@ export default function ResultsPage() {
 
                 <div className="max-w-md mx-auto space-y-3">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Risk Probability</span>
-                    <span className={`font-semibold ${riskConfig.color}`}>{probabilityPercent}%</span>
+                    <span className="text-muted-foreground">
+                      Risk Probability
+                    </span>
+                    <span className={`font-semibold ${riskConfig.color}`}>
+                      {probabilityPercent}%
+                    </span>
                   </div>
                   <Progress value={probabilityPercent} className="h-3" />
                 </div>
@@ -238,7 +278,9 @@ export default function ResultsPage() {
 
           {/* Recommendations */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-6">Personalized Health Recommendations</h2>
+            <h2 className="text-2xl font-bold mb-6">
+              Personalized Health Recommendations
+            </h2>
             <div className="space-y-6">
               {recommendations.map((rec, idx) => (
                 <Card key={idx}>
@@ -255,7 +297,9 @@ export default function ResultsPage() {
                       {rec.items.map((item, itemIdx) => (
                         <li key={itemIdx} className="flex items-start gap-3">
                           <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
-                          <span className="text-muted-foreground leading-relaxed">{item}</span>
+                          <span className="text-muted-foreground leading-relaxed">
+                            {item}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -272,16 +316,19 @@ export default function ResultsPage() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-2 leading-relaxed">
               <p>
-                This risk assessment is for informational purposes only and should not be considered as medical advice,
-                diagnosis, or treatment.
+                This risk assessment is for informational purposes only and
+                should not be considered as medical advice, diagnosis, or
+                treatment.
               </p>
               <p>
-                The results are based on machine learning models and may not account for all individual health factors.
-                Always consult with qualified healthcare professionals for medical decisions and personalized advice.
+                The results are based on machine learning models and may not
+                account for all individual health factors. Always consult with
+                qualified healthcare professionals for medical decisions and
+                personalized advice.
               </p>
               <p>
-                If you experience chest pain, shortness of breath, or other serious symptoms, seek immediate medical
-                attention.
+                If you experience chest pain, shortness of breath, or other
+                serious symptoms, seek immediate medical attention.
               </p>
             </CardContent>
           </Card>
@@ -294,5 +341,5 @@ export default function ResultsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
