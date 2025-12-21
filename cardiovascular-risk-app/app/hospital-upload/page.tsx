@@ -98,17 +98,26 @@ export default function HospitalUploadPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/predict-csv`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      if (!backendUrl) {
+        throw new Error("Backend URL is not configured");
+      }
+
+      const response = await fetch(`${backendUrl}/predict-csv`, {
+        method: "POST",
+        body: formData,
+      });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Upload failed");
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Upload failed");
+        } else {
+          const text = await response.text();
+          console.error("Backend Error:", text);
+          throw new Error(`Upload failed with status: ${response.status}`);
+        }
       }
 
       const data = await response.json();
