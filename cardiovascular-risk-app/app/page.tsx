@@ -117,9 +117,9 @@ export default function HomePage() {
         <div className="mx-4 mt-4 rounded-3xl bg-[#0B3C5D]">
           <div className="container mx-auto px-6 py-5 flex items-center justify-between text-white">
             <nav className="hidden md:flex gap-6 text-sm">
-              <Link href="#">Individual</Link>
-              <Link href="#">Hospital</Link>
-              <Link href="#">GitHub</Link>
+              <Link href="/predict">Individual</Link>
+              <Link href="/hospital-upload">Hospital</Link>
+              <Link href="https://github.com/Tejeswar001/Heart-ML">GitHub</Link>
             </nav>
 
             <div className="text-2xl font-extrabold">
@@ -127,9 +127,9 @@ export default function HomePage() {
             </div>
 
             <nav className="hidden md:flex gap-6 text-sm">
-              <Link href="#">About</Link>
-              <Link href="#">Concept</Link>
-              <Link href="#">Contact</Link>
+              <Link href="/about">About</Link>
+              <Link href="#features">Features</Link>
+              <Link href="#how-it-works">How it works</Link>
             </nav>
           </div>
         </div>
